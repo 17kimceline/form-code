@@ -9,7 +9,7 @@ var n = 50;
 var t = 20;
 var b = 20;
 var th = 0;
-var spaceship_num = 30;
+var spaceship_num = 50;
 
 // arrays to hold in color
 var back = [];
