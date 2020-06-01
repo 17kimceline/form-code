@@ -1,43 +1,334 @@
+// MAIN CODE TAKEN FROM: https://codepen.io/sciecode/pen/QzMPgr
+
+// ARTIST ScieCode was 
+//    INSPIRED BY Hyper Glu's Going to Quasar.
+//    https://www.behance.net/gallery/45428489/Going-to-Quasar
+
+var N = 50;
+var n = 50;
+var t = 20;
+var b = 20;
+var th = 0;
+var spaceship_num = 30;
+
+// arrays to hold in color
+var back = [];
+var middle = [];
+var inter = [];
+var front = [];
+var points = [];
+var planet;
+
+// x and y coodrinates of my small spaceship
+var space_coord = [];
+var rate = 2
+
+var sz, msz;
+var viewport;
+
 function setup() {
-  createCanvas(innerWidth, innerHeight)
-  background(40, 50, 100)
-  /*strokeWeight(10)
-  stroke(255, 0,0)
-  stroke(255, 0, 0)
-  fill(255, 0, 255)
-  ellipse(x, y, r)*/
+	var density = displayDensity();
+	pixelDensity(density);
+
+	createCanvas(windowWidth, windowHeight);
+	planet = createVector(viewport/4.1, -viewport/5);
+	
+	c1 = color("#140c35");
+	c2 = color("#3166f4");
+	c3 = color("#31f4ef");
+	c4 = color("#e9ff76");
+	c5 = color("#fcffec");
+
+	viewport = min( windowHeight, windowWidth );
+	sz = viewport/7;
+	msz = sz/4;
+
+	frameRate(60);
+	init();
 }
-/*
-function mouseMoved(){
-  let x = mouseX
-  let y = map(mouseY, 0, height, height*0.25, height*0.75) 
-  let d = mouseY
 
-  let r = map(mouseX, 0, width, 0, 255)
-  let g = map(mouseY, 0, height, 0, 255)
-  fill(r, g, 0)
-  ellipse(x,y, d)
-}*/
-
-let x = innerWidth/2
-let y = innerHeight/2
-let dy = 2
-let dx = 2
-
-function draw(){
-  background(40,50,77,10)
-  let d = width/8
-  let r = d/2
-  dx = (((x > width - r) || x < r) ? -dx : dx)
-  dy = (y > height - r || (y < r) ? -dy : dy)
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	viewport = min( windowHeight, windowWidth );
+	planet = createVector(viewport/4.1, -viewport/5);
   
-  x += dx
-  y += dy
-  
-  //if (mouseIsPressed){
-  ellipse(x,y,d)
-  //}
-
-
+	sz = viewport/7;
+	msz = sz/4;
 }
+
+function init() {
+	// create spaceship coordinates
+	for (var i = 0; i<spaceship_num; i++){
+		var y = random(-viewport, viewport)
+		var x = random(-viewport, viewport)
+
+		space_coord.push([x,y, rate, rate]) // x y dx, dy
+	}
+
+	// creates background aura
+	for (var i = 0; i < N; i++) {
+		var color;
+		// first color
+		if ( i/(N-1) < 1/4){
+			color = lerpColor( c1, c2, i/(N/4)); // lerp: find third color between two
+		}
+		// second color 
+		else if ( i/(N-1) < 1/2) {
+			color = lerpColor( c2, c3, (i-N/4)/(N/4));
+		}
+		// third color 
+		else if (i/(N-1) < 3/4) {
+			color = lerpColor(c3, c4, (i-2*N/4)/(N/4-1));
+		}
+		else {
+			color = lerpColor(c4, c5, (i-2*N/4)/(N/4-1));
+		}
+		color.setAlpha(20 + 5*i/(N-1) ); //sets the transparency value of a color
+		back.push([color]);
+	}
+
+	// creates the strobe lines
+	for ( var i = 0; i < b; i++ ) {
+		var color;
+		// creating colours of strobe lines
+		let r = random(0, 0.30)
+
+		if (i/(b-1) < 1/4){
+			color = lerpColor(c1, c2, min(i/(b/3) + r, 1));
+		} 
+		else if ( i/(b-1) < 1/2 ) {
+			color = lerpColor(c2, c3, min((i-b/3)/(b/3) + r, 1));
+		} 
+		else if ( i/(b-1) < 3/4 ) {
+			color = lerpColor(c3, c4, min((i-2*b/4)/(b/4) + r, 1));
+		}
+		else{
+			color = lerpColor(c4, c5, min((i-2*b/4)/(b/4-1) + r, 1));
+		}
+		color.setAlpha(400 * r);
+
+		r = random(5, 9);
+		k = 0;
+		middle.push([]); // holds [color, x, y, direction]
+
+		for (var j = 0; j < r; j++ ) {
+			var x = random(k, k+(TWO_PI-0.01)/r/2);
+			var y = random(k+(TWO_PI-0.01)/r/2, k+(TWO_PI-0.01)/r);
+			
+			if (y < x)
+			{
+				tmp = x;
+				x = y;
+				y = x;
+			}
+			var dir = 1;
+			if (random(0,1) < 0.5) // 50 % chance that it arcs one way or the other
+				dir *= -1;
+			middle[i].push([color, x, y, dir]);
+			k += (TWO_PI-0.01)/r;
+		}
+	}
+
+	for (var i = 0; i < t; i++ ) {
+		var color;
+		if ( i/(t-1) < 1/3 ){
+			color = lerpColor(c1, c2, max(i/(t/3) + random(0, -0.3), 0));
+		} else if ( i/(t-1) < 2/3 ) {
+			color = lerpColor(c2, c3, max((i-t/3)/(t/3) + random(0, -0.3), 0));
+		} else {
+			color = lerpColor(c3, c4, max((i-2*t/3)/(t/3-1) + random(0, -0.3),0));
+		}
+
+		color.setAlpha( 70 + 5*i/(t-1) );
+		r = random(9, 15);
+		k = 0;
+		inter.push([]);
+		for ( var j = 0; j < r; j++ ) {
+			var x = random(k, k+(TWO_PI-0.01)/r/2 );
+			var y = random(k+(TWO_PI-0.01)/r/2, k+(TWO_PI-0.01)/r );
+			if ( y < x ) {
+				tmp = x;
+				x = y;
+				y = x;
+			}
+			var dir = 1;
+			if ( random(0,1) < 0.5) 
+				dir *= -1;
+			inter[i].push([color, x, y, dir ]);
+			k += (TWO_PI-0.01)/r;
+		}
+	}
+
+	for ( var i = 0; i < n; i++ ) {
+		var color;
+		let r = random(0, 0.30)
+		if ( i/(n-1) < 1/3 ){
+			color = lerpColor( c1, c2, min( i/(n/3) + r, 1 ));
+		} else if ( i/(n-1) < 2/3 ) {
+			color = lerpColor( c2, c3, min( (i-n/3)/(n/3) +r, 1 ));
+		} else {
+			color = lerpColor( c3, c4, min( (i-2*n/3)/(n/3-1) + r, 1 ));
+		}
+		color.setAlpha(155 + 100 *i/(n-1));
+
+		r = random(3, 6);
+		k = 0;
+		front.push([]);
+		for ( var j = 0; j < r; j++ ) {
+			var x = random( k, k+(TWO_PI-0.01)/r/2 );
+			var y = random( k+(TWO_PI-0.01)/r/2, k+(TWO_PI-0.01)/r );
+			if ( y < x ) {
+				tmp = x;
+				x = y;
+				y = x;
+			}
+			if ( i % 4 < 1 ) continue;
+			var dir = 1;
+			if ( random(0,1) < 0.5) 
+				dir *= -1;
+			front[i].push([ color, x, y, dir ]);
+			k += (TWO_PI-0.01)/r;
+		}
+	}
+
+	for ( var i = 0; i < n; i++ ) {
+		var color;
+		if ( i/(n-1) < 1/3 ){
+			color = lerpColor(c1, c2, max( min( i/(n/3) + random(-0.3, 0.3), 1 ), 0));
+		} else if ( i/(n-1) < 2/3 ) {
+			color = lerpColor(c2, c3, max( min( (i-n/3)/(n/3) + random(-0.3, 0.3), 1 ), 0));
+		} else {
+			color = lerpColor(c3, c4, max( min( (i-2*n/3)/(n/3-1) + random(-0.3, 0.3), 1), 0));
+		}
+
+		color.setAlpha( 155 + 100*random(-1,1) );
+		r = random( 8, 16 );
+		k = 0;
+		points.push([]);
+		for ( var j = 0; j < r; j++ ) {
+			var ang = random( k, k+(TWO_PI-0.01)/r );
+			var dir = random(-1,1);
+			points[i].push([ color, ang, dir ]);
+			k += (TWO_PI-0.01)/r;
+		}
+	}
+}
+
+
+function draw() {
+	background("#140c25");
+
+	scale(1, -1);
+	translate(0, -windowHeight);
+	
+	translate(windowWidth/2 , windowHeight/2 );
+
+	noStroke();
+	for ( var i = 0; i < N; i++ ) {
+		item = back[i];
+		fill( item[0] );
+		ellipse( 0, 0, (viewport-40)*( 1-i/(N+1)));
+	}
+
+	noFill();
+	strokeWeight( (viewport-40)/2/(b+1) );
+	for (var i = 0; i < b; i++ ) {
+		group = middle[i];
+		for ( var j = 0; j < group.length; j++ ) {
+			item = group[j];
+			
+			stroke(item[0]);
+			// arc(x, y, w, h, start, stop)
+			arc (0, 0, 
+				(viewport-40)*( 1-i/(b+1)), 
+				(viewport-40)*( 1-i/(b+1)), 
+				item[1]+th/8*(1.5+(1 - i/(b+1)))*item[3], 
+				item[2]+th/8*(1.5+(1 - i/(b+1)))*item[3]);
+		}
+	}
+
+	strokeWeight((viewport-40)/2/(t+1) );
+	for (var i = 0; i < t; i++ ) {
+		group = inter[i];
+		for (var j = 0; j < group.length; j++ ) {
+			item = group[j];
+			stroke( item[0] );
+			arc( 0, 0, 
+				(viewport-40)*( 1-i/(t+1) ), 
+				(viewport-40)*( 1-i/(t+1) ), 
+				item[1]+th/6*(1.5+(1 - i/(t+1)))*item[3], 
+				item[2]+th/6*(1.5+(1 - i/(t+1)))*item[3] );
+		}
+	}
+
+	strokeWeight((viewport-40)/2/(n+1));
+	for ( var i = 0; i < n; i++ ) {
+		group = front[i];
+		for (var j = 0; j < group.length; j++ ) {
+			item = group[j];
+			stroke( item[0] );
+			arc( 0, 0, 
+				(viewport-40)*( 1-i/(n+1) ), 
+				(viewport-40)*( 1-i/(n+1) ), 
+				item[1] + th/2*(1.5+(1 - i/(n+1))/2)*item[3], 
+				item[2]+th/2*(1.5+(1 - i/(n+1))/2)*item[3]);
+		}
+	}
+
+	strokeWeight((viewport-40)/(n+1)/2 );
+	for ( var i = 0; i < n; i++ ) {
+		group = points[i];
+		for ( var j = 0; j < group.length; j++ ) {
+			item = group[j];
+			stroke( item[0] );
+			r = (viewport)*( 1-i/(n+1) );
+			ellipse(0,0,1,2)
+			arc( 0, 0, r, r, item[1] + th/2*(1.5+(1 - i/(n+1))/2)*item[2] , 
+				item[1] + th/2*(1.5+(1 - i/(n+1))/2)*item[2] + 0.0001 );
+		}
+	}
+	// drawig my spaceships
+	noStroke();
+	for (var i = 0; i < spaceship_num; i++){
+		space = space_coord[i]
+		space[2] = (((space[0] > viewport-40) || space[0] < -viewport) ? -space[2] : space[2])
+		space[3] = (((space[1] > viewport-40) || space[1] < -viewport) ? -space[3] : space[3])
+		var s = Math.sqrt(space[0]*space[0] + space[1]*space[1]);
+		s= s*2/ viewport 
+		space[0] += space[2]*s
+		space[1] += space[3]*s
+
+		ellipse(space[0], space[1], 20*s)
+		//triangle(space[0], (10*s)+space[1], space[0], 
+		//		 space[1], (10*s)+space[0], (5*s)+space[1])
+		fill(c5)
+	}
+
+	push(); // start a new drawing state
+	noStroke(); // no border please
+	rotate(2*th/3); // rotate a shape by angle
+
+	for (var i = 0; i < N; i++) {
+		var j = i/(N-1);
+
+		push();
+		translate(planet.x, planet.y);
+		var norm = planet.copy().normalize();
+		translate(norm.x*msz*j/2+0.1, norm.y*msz*j/2+0.1);
+		rotate( planet.heading());
+		var k1 = lerpColor( c2, c3, 0.5);
+		var k2 = lerpColor( c1, c2, 0.2);
+		var s = map ( 1-(planet.mag()/viewport), 0, 0.999, 0, 0.5 ) ;
+		var k = lerpColor( k1, k2, pow(j, s));
+
+		k.setAlpha(25);
+		fill(k);
+		pop();
+	}
+	pop();
+	th += 0.01;
+}
+
+ window.addEventListener('orientationchange', windowResized);
+ 
 
