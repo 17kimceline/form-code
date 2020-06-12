@@ -199,7 +199,7 @@ function draw() {
 	for (let i = 0; i < num_spiral; i++){
 
 		k = (1-(i/num_spiral) + k)
-		sp_back[i][0].setAlpha(200);
+		//sp_back[i][0].setAlpha(200);
 		createPortal(d + freedom - gate_size*k*1.5, 
 					gate_size*(1 - (i/num_spiral)), 
 					angle + constant*i, 
