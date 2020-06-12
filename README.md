@@ -11,6 +11,11 @@ They slow down and become smaller as they float 'further away'. With this piece,
 I was mainly playing around with how scale and speed can alter a person's perspective of a 2D animation. 
 
 Hope you enjoy!
+
+
+Below are progress shots!
 ![Alt text](first.png?raw=true "First")
+
+![Alt text](second.png?raw=true "Second")
 
 

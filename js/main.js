@@ -7,24 +7,52 @@
  * 			https://codepen.io/sciecode/pen/QzMPgr
  * 		This artist was also inspired by Hyper Glu's Going to Quasar.
  * 		https://www.behance.net/gallery/45428489/Going-to-Quasar
+ * 
+ * 		Complimentary Colours calculated here: 
+ * 			https://www.sessions.edu/color-calculator/
  *
  */
-const spaceship_num = 20;
+const spaceship_num = 90;
 const gradient = 50;
+const star_num = 1000;
 
 // arrays to hold in color
 let back = [];
+let sp_back = []
+let stars = [];
+const max_star_size = 0.5;
 
 // x and y coodrinates of my small spaceship
 let space_coord = [];
-let rate = 0.3;
+let rate = 2;
+const max_rate = 2;
+const min_rate = -2;
+const pastel_colors = ["#d3dcce", "#f0f8ff", "#ffbab8", "#dfebe8", "#ff8787", "fbf3ff",
+						"#d4c8e1", "#ffe4e1", "#cbcba9"] 
 
+
+// far they can go off the screen 
+const freedom = 100;
+
+// angle of the portal gates
+let angle = 0;
+
+
+
+/*
+	x-coordinates
+*/
 function setup() {
 	createCanvas(windowWidth,windowHeight);
-
 	// my five main colours dudettes
-	c = [color("#140c35"),color("#3166f4"), color("#31f4ef"),
+	bg = [color("#140c35"),color("#3166f4"), color("#31f4ef"), 
 		  color("#e9ff76"),color("#fcffec")]
+
+	// The approximate complemtary colours of the five dudettes
+	sp = [color("#f46231"),color("#c77630"), color("#f09f98"), 
+		  color("#f7cee8"),color("#ffecfc")]
+
+	
 	// keep that frame rate fresh
 	frameRate(20);
 	init();
@@ -35,7 +63,7 @@ function windowResized() {
 }
 
 // creates the colours for the background gradients
-function backgroundAura(){
+function backgroundAura(c,a, back, gradient){
 
 	for (let i = 0; i < gradient; i++) {
 		let color;
@@ -57,61 +85,80 @@ function backgroundAura(){
 			color = lerpColor(c[3], c[4], (i-2*gradient/4)/(gradient/4-1));
 		}
 		//sets the transparency value of a color
-		color.setAlpha(20 + 5*i/(gradient-1)); 
+		if(a){
+			color.setAlpha(30 + 5*i/(gradient-1)); 
+		}
+
 		back.push([color]);
 	}
 
 }
+
+
 function init() {
-	backgroundAura();
+	backgroundAura(bg, true, back, 50);
+	backgroundAura(sp, false, sp_back, 50)
+	console.log(sp_back)
 
 	// create my little spaceships
 	for (let i = 0; i<spaceship_num; i++){
 		let y = random(0, innerHeight)
 		let x = random(0, innerWidth)
-		let color = c[Math.floor(Math.random()*5)]
 
-		space_coord.push([x,y, rate, rate, color]) // x y dx, dy
+		// give them random rates because each pilot got their own feelings
+		dx = Math.random()*(max_rate - min_rate) + min_rate
+		dy = Math.random()*(max_rate - min_rate) + min_rate
+		space_coord.push([x,y, dx, dy/2]) // x y dx, dy
+	}
+
+	// create the stars
+	for (let i =0; i< star_num;i++){
+		let y = random(0, innerHeight)
+		let x = random(0, innerWidth)
+		let s = random(0, max_star_size)
+		stars.push([x,y, s])
+
 	}
 	
 }
 
-let angle = 0;
+
 
 // creates rotating portal gatess
-function createPortal(d, start, gate_size, angle){
-	fill(c[4]);
+function createPortal(start, gate_size, angle, color){
+	noFill()
+	strokeWeight(gate_size)
+	stroke(color)
 	arc(innerWidth/2, innerHeight/2, 
-		d-start, d-start, angle, 
-		PI+QUARTER_PI +angle);
-
-	fill(c[0]);
-	ellipse(innerWidth/2, innerHeight/2, d-70-gate_size);
+		start, start, angle, 
+		QUARTER_PI + angle);
 }
 
 function draw() {
 	background("#140c25");
 	let d = min(innerWidth, innerHeight);
-
-	gate_size = d/15;
-	createPortal(d, 70, gate_size, angle);
-	createPortal(d, 100+gate_size, (gate_size*2), -angle);
-
-	angle += 0.01;
-
+	// draw stars
+	for(let i = 0; i< star_num; i++){
+		fill("white")
+		
+		r = random(d/90, d/100)
+		ellipse(stars[i][0], stars[i][1], stars[i][2]*r);
+	}
 	// create gradient number of ellipses to create background
 	noStroke();
 	for (let i = 0; i < gradient; i++ ) {
 		fill(back[i][0]);
-		ellipse(innerWidth/2, innerHeight/2, d*(1-i/(gradient+1)));
+		ellipse(innerWidth/2, innerHeight/2, (d+400)*(1-i/(gradient+1)));
 	}
 
 	// drawig my spaceships
 	noStroke();
 	for (let i = 0; i < spaceship_num; i++){
-		//fill(space[4]) // this is if your want coloured spaceships!
-		fill(c[4])
-
+		r = floor(random(0, pastel_colors.length))
+		c = color(pastel_colors[r])
+		fill(c)
+		
+		
 		space = space_coord[i]
 		x = space[0];
 		y = space[1];
@@ -119,9 +166,10 @@ function draw() {
 		dy = space[3];
 
 		// let them go off screen for a little bit
-		space[2] = (((x > innerWidth+20) ||x < -20) ? -dx : dx)
-		space[3] = (((y > innerHeight+20) || y < -20) ? -dy : dy)
+		space[2] = (((x > innerWidth+freedom) ||x < -freedom) ? -dx : dx)
+		space[3] = (((y > innerHeight+freedom) || y < -freedom) ? -dy : dy)
 
+		
 		// using my classy distance formula to get distance from center
 		let s = Math.sqrt(Math.pow((x-(innerWidth/2)), 2) + Math.pow((y-(innerHeight/2)),2));
 		s= s*2/(d/2)
@@ -132,15 +180,33 @@ function draw() {
 		dir = (space[2] < 0 ? -1 : 1)
 		x = space[0];
 		y = space[1];
+		diry = (space[3] < 0 ? -1 : 1)
 
 		// spaceship
 		beginShape();
-		vertex(x - 10*s*dir, y + 8*s*dir); // wing1
-		vertex(x - 7*s*dir, y); // butt
-		vertex(x - 10*s*dir, y - 8*s*dir); // wing2
-		vertex(x + 10*s*dir, y);
+			vertex(x - 10*s*dir, y + 8*s*dir); // wing1
+			vertex(x - 7*s*dir, y); // butt
+			vertex(x - 10*s*dir, y - 8*s*dir); // wing2
+			vertex(x + 12*s*dir, y); //node
 		endShape(CLOSE);
 	}
+
+	// drawing portal gates
+	gate_size = d/50;
+	num_spiral = 50;
+	constant = 30/num_spiral
+	k = 0;
+	for (let i = 0; i < num_spiral; i++){
+
+		k = (1-(i/num_spiral) + k)
+		sp_back[i][0].setAlpha(200);
+		createPortal(d + freedom - gate_size*k*1.5, 
+					gate_size*(1 - (i/num_spiral)), 
+					angle + constant*i, 
+					sp_back[i][0]);
+	}
+	angle+=0.01
+	
 
 }
 
