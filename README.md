@@ -14,13 +14,14 @@ Hope you enjoy!
 
 
 Below are progress shots!
-<img src="first.png" alt="alt text" width=50 height=50>
-![Alt text](first.png?raw=true "First")
+<img src="first.png" alt="first" height=500>
 
-![Alt text](second.png?raw=true "Second")
+<img src="second.png" alt="second" height=500>
 
-![Alt text](smallerPortal.png?raw=true "Smaller Portal")
+<img src="second.png" alt="second" height=500>
+<img src="smallerPortal.png" alt="Smaller Portal" height=500>
 
 Image without background portal!
-![Alt text](third.png?raw=true "Without Portal")
+<img src="third.png" alt="Without Portal" height=500>
+
 
