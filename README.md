@@ -14,6 +14,7 @@ Hope you enjoy!
 
 
 Below are progress shots!
+<br/>
 <img src="first.png" alt="first" height=500>
 
 <img src="second.png" alt="second" height=500>
