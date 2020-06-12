@@ -148,7 +148,7 @@ function draw() {
 	noStroke();
 	for (let i = 0; i < gradient; i++ ) {
 		fill(back[i][0]);
-		ellipse(innerWidth/2, innerHeight/2, (d+400)*(1-i/(gradient+1)));
+		ellipse(innerWidth/2, innerHeight/2, (d)*(1-i/(gradient+1)));
 	}
 
 	// drawig my spaceships

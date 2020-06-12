@@ -18,4 +18,6 @@ Below are progress shots!
 
 ![Alt text](second.png?raw=true "Second")
 
+Image without background portal!
+![Alt text](third.png?raw=true "Without Portal")
 
