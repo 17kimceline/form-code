@@ -49,8 +49,12 @@ function setup() {
 		  color("#e9ff76"),color("#fcffec")]
 
 	// The approximate complemtary colours of the five dudettes
-	sp = [color("#f46231"),color("#c77630"), color("#f09f98"), 
+	/*sp = [color("#f46231"),color("#c77630"), color("#f09f98"), 
 		  color("#f7cee8"),color("#ffecfc")]
+*/
+	sp = [color("#5c5148"),color("#a9602f"),
+		  color("#bf550d"), color("#44c3ce"),
+		  color("#fffef0"),color("#ffecfc")]	
 
 	
 	// keep that frame rate fresh
@@ -94,11 +98,38 @@ function backgroundAura(c,a, back, gradient){
 
 }
 
+/*
+	My function pased on function backgroundAura()
+*/
+function backgroundAura2(c, back, gradient){
+	let n = c.length
+	let index = 0;
+	let diff = 1/(n-1)
+
+	let bb = Math.ceil(gradient/(n-1))
+
+	for (let i = 0; i < gradient; i++) {
+		let color;
+		let k = (i%bb)/bb
+		print(i, k, index, diff, i/gradient)
+		// update the index
+		if(i/gradient >= diff){
+			index++;
+			diff += 1/(n-1)
+		}
+		color = lerpColor(c[index], 
+						  c[index +1], 
+						  k+0.1)
+		back.push([color]);
+	}
+
+}
+
+
 
 function init() {
 	backgroundAura(bg, true, back, 50);
-	backgroundAura(sp, false, sp_back, 50)
-	console.log(sp_back)
+	backgroundAura2(sp, sp_back, 50)
 
 	// create my little spaceships
 	for (let i = 0; i<spaceship_num; i++){
@@ -137,11 +168,12 @@ function createPortal(start, gate_size, angle, color){
 function draw() {
 	background("#140c25");
 	let d = min(innerWidth, innerHeight);
+	
 	// draw stars
 	for(let i = 0; i< star_num; i++){
 		fill("white")
 		
-		r = random(d/90, d/100)
+		r = random(d/70, d/100)
 		ellipse(stars[i][0], stars[i][1], stars[i][2]*r);
 	}
 	// create gradient number of ellipses to create background
@@ -156,8 +188,8 @@ function draw() {
 	for (let i = 0; i < spaceship_num; i++){
 		r = floor(random(0, pastel_colors.length))
 		c = color(pastel_colors[r])
-		fill(c)
-		
+		stroke(c)
+		noFill(c)
 		
 		space = space_coord[i]
 		x = space[0];
@@ -172,10 +204,11 @@ function draw() {
 		
 		// using my classy distance formula to get distance from center
 		let s = Math.sqrt(Math.pow((x-(innerWidth/2)), 2) + Math.pow((y-(innerHeight/2)),2));
-		s= s*2/(d/2)
+		s= s/(d/3)
 
-		space[0] += space[2]*s
-		space[1] += space[3]*s
+		strokeWeight(d/(300)*s)
+		space[0] += space[2]*s*s
+		space[1] += space[3]*s*s
 
 		dir = (space[2] < 0 ? -1 : 1)
 		x = space[0];
@@ -192,7 +225,7 @@ function draw() {
 	}
 
 	// drawing portal gates
-	gate_size = d/50;
+	gate_size = d/40;
 	num_spiral = 50;
 	constant = 30/num_spiral
 	k = 0;
@@ -200,10 +233,10 @@ function draw() {
 
 		k = (1-(i/num_spiral) + k)
 		//sp_back[i][0].setAlpha(200);
-		createPortal(d + freedom - gate_size*k*1.5, 
+		createPortal(d + freedom - gate_size*k*1, 
 					gate_size*(1 - (i/num_spiral)), 
 					angle + constant*i, 
-					sp_back[i][0]);
+					sp_back[i%50][0]);
 	}
 	angle+=0.01
 	

@@ -10,6 +10,15 @@ The triangle spaceships swim around in anti-gravity.
 They slow down and become smaller as they float 'further away'. With this piece, 
 I was mainly playing around with how scale and speed can alter a person's perspective of a 2D animation. 
 
+
+<br/>
+Detail I hope people notice ^-^/
+<ul>
+  <li>Coffee</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul>
+
 Hope you enjoy!
 
 
