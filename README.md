@@ -14,9 +14,11 @@ I was mainly playing around with how scale and speed can alter a person's perspe
 <br/>
 Detail I hope people notice ^-^/
 <ul>
-  <li>Coffee</li>
-  <li>Tea</li>
-  <li>Milk</li>
+  <li>Stars flicker!</li>
+  <li>Spaceships flicker pastel colours</li>
+  <li>The ships become smaller and slower as they fly down into the portal</li>
+  <li>After a while, many of this ships get "trapped" in the portal
+  <li>Portal Gates Spiral down in gradient colours</li>
 </ul>
 
 Hope you enjoy!
