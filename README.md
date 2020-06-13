@@ -13,6 +13,7 @@ I was mainly playing around with how scale and speed can alter a person's perspe
 
 <br/>
 Detail I hope people notice ^-^/
+
 <ul>
   <li>Stars flicker!</li>
   <li>Spaceships flicker pastel colours</li>
