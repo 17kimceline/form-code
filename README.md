@@ -27,14 +27,17 @@ Hope you enjoy!
 
 Below are progress shots!
 <br/>
-<img src="first.png" alt="first" height=500>
+<img src="first.png" alt="first" height=400>
 
-<img src="second.png" alt="second" height=500>
+<img src="second.png" alt="second" height=400>
 
-<img src="second.png" alt="second" height=500>
-<img src="smallerPortal.png" alt="Smaller Portal" height=500>
+<img src="second.png" alt="second" height=400>
+<img src="smallerPortal.png" alt="Smaller Portal" height=400>
 
 Image without background portal!
-<img src="third.png" alt="Without Portal" height=500>
+<br/>
+<img src="third.png" alt="Without Portal" height=400>
 
-
+Final Image!!
+<br/>
+<img src="final_image.png" alt="Final Result!" height=500>
